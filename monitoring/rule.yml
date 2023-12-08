@@ -1,0 +1,30 @@
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: prometheusrules
+  namespace: monitoring
+  labels:
+    release: kube-prometheus-stack
+    resource: kube-prometheus-stack
+spec:
+  groups:
+    - name: api
+      rules:
+      - alert: down
+        expr: up == 0
+        for: 0m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Prometheus target is missing {{$labels.instance}}"
+    - name: HighErrorRate
+      rules:
+       - alert: HighErrorRate
+         expr: sum(rate(nginx_ingress_controller_requests{status=~"4[0-9]{2}"}[5m])) / sum(rate(nginx_ingress_controller_requests[5m])) > 0.1
+         for: 1m
+         labels:
+           severity: critical
+         annotations:
+           summary: "High 4xx error rate detected"
+           description: "More than 10% of the ingress in requests are returning 4xx errors."

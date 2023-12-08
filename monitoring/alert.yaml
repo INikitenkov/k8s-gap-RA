@@ -1,0 +1,43 @@
+apiVersion: monitoring.coreos.com/v1alpha1
+kind: AlertmanagerConfig
+metadata:
+  name: alert-config
+  namespace: monitoring
+  labels:
+    resource: prometheus-stack
+    release: prometheus-stack
+spec:
+  route:
+    groupBy:  ['severity'] #['severity'] #, 'alertname', 'instance', 'job']
+    groupWait: 30s
+    groupInterval: 1m
+    repeatInterval: 1m
+    receiver: "telepush"
+    #receiver: "telegrambot"
+  receivers:
+  #- name: "telegrambot"
+  #  telegramConfigs:
+  #  - apiURL: https://api.telegram.org
+  #    botToken: 
+  #      name: telegram-bot-secret
+  #      key: token
+  #    chatID: -1002088241572
+  #    parseMode: 'HTML'
+  #    message: test
+  #    sendResolved: True
+  - name: "telepush" 
+    webhookConfigs:
+    - url: "https://discord.com/api/webhooks/1182577449268170853/TgpdM6yBybXTEAn7BVBP4-eupZFg-ZCjTVyuTmDcfDt1pVKAS6G8fR4nz2Xt-hUo8U3x"
+      #title:  problem with ...
+      #  message: Some problem
+  #      message: | 
+  #        {{ define "telegram.default.message" }}
+  #          {{ if gt (len .Alerts.Firing) 0 }}
+  #                Alerts Firing:
+  #        {{ template "__text_alert_list" .Alerts.Firing }}
+  #        {{ end }}
+  #        {{ if gt (len .Alerts.Resolved) 0 }}
+  #              Alerts Resolved:
+  #        {{ template "__text_alert_list" .Alerts.Resolved }}
+  #        {{ end }}
+  #        {{ end }}
